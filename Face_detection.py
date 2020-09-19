@@ -60,6 +60,19 @@ class FaceAction:
         mar = (A + B + C) / (2.0 * D)
         return mar
 
+    def yawn(self, frame):
+        frame = resize(frame, width=450)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        subjects = self.detect(gray, 0)
+        if (len(subjects) == 0):
+            return 0
+        for subject in subjects:
+            shape = self.predict(gray, subject)
+            shape = face_utils.shape_to_np(shape)
+            mouth = shape[self.mStart:self.mEnd]
+            mar = self.mouth_ar(mouth)
+            return mar
+
     def drowsy(self, frame):
         frame = resize(frame, width=450)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -74,7 +87,7 @@ class FaceAction:
             shape = face_utils.shape_to_np(shape)
             leftEye = shape[self.lStart:self.lEnd]
             rightEye = shape[self.rStart:self.rEnd]
-            leftEAR = self.eye_aspect_ratio(leftEye)
-            rightEAR = self.eye_aspect_ratio(rightEye)
+            leftEAR = self.eye_ar(leftEye)
+            rightEAR = self.eye_ar(rightEye)
             ear = (leftEAR + rightEAR) / 2.0
             return ear
