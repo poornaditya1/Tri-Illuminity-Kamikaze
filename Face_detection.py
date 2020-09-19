@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 
 
-class FaceAction:
+class Face_detection:
     tot = 0
     detect = get_frontal_face_detector()
     predict = shape_predictor("shape_predictor_68_face_landmarks.dat")
@@ -78,8 +78,6 @@ class FaceAction:
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         subjects = self.detect(gray, 0)
         self.tot = len(subjects)
-        # print(len(subjects))
-        # print(self.tot)
         if (len(subjects) == 0):
             return 1
         for subject in subjects:
@@ -94,7 +92,7 @@ class FaceAction:
 
 
 
-    def get_head_pose(self, shape, object_pts, cam_matrix, dist_coeffs, reprojectsrc):
+    def get_headpose(self, shape, object_pts, cam_matrix, dist_coeffs, reprojectsrc):
         image_pts = np.float32([shape[17], shape[21], shape[22], shape[26], shape[36],
                                 shape[39], shape[42], shape[45], shape[31], shape[35],
                                 shape[48], shape[54], shape[57], shape[8]])
@@ -107,21 +105,20 @@ class FaceAction:
 
         reprojectdst = tuple(map(tuple, reprojectdst.reshape(8, 2)))
 
-        # calc euler angle
         rotation_mat, _ = cv2.Rodrigues(rotation_vec)
         pose_mat = cv2.hconcat((rotation_mat, translation_vec))
         _, _, _, _, _, _, euler_angle = cv2.decomposeProjectionMatrix(pose_mat)
 
         return reprojectdst, euler_angle
 
-    def head_pose(self, frame):
+    def headpose(self, frame):
 
         face_rects = self.detect(frame, 0)
         if(len(face_rects) > 0):
             shape = self.predict(frame, face_rects[0])
             shape = face_utils.shape_to_np(shape)
 
-            _, euler_angle = self.get_head_pose(
+            _, euler_angle = self.get_headpose(
                 shape, self.object_pts, self.cam_matrix, self.dist_coeffs, self.reprojectsrc)
             if(-10 <= euler_angle[2, 0] and euler_angle[2, 0] <= 10):
                 return 0
@@ -131,4 +128,4 @@ class FaceAction:
             return 1
 
     def run_frame(self, frame):
-        return (self.drowsy(frame), self.yawn(frame), self.head_pose(frame), self.tot)
+        return (self.drowsy(frame), self.yawn(frame), self.headpose(frame), self.tot)
