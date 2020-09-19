@@ -45,14 +45,14 @@ class FaceAction:
                                [-10.0, -10.0, -10.0],
                                [-10.0, -10.0, 10.0]])
 
-    def eye_aspect_ratio(self, eye):
+    def eye_ar(self, eye):
         A = distance.euclidean(eye[1], eye[5])
         B = distance.euclidean(eye[2], eye[4])
         C = distance.euclidean(eye[0], eye[3])
         ear = (A + B) / (2.0 * C)
         return ear
 
-    def mouth_aspect_ratio(self, mouth):
+    def mouth_ar(self, mouth):
         A = distance.euclidean(mouth[13], mouth[19])
         B = distance.euclidean(mouth[14], mouth[18])
         C = distance.euclidean(mouth[15], mouth[17])
