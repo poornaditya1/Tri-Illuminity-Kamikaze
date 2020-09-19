@@ -91,3 +91,44 @@ class FaceAction:
             rightEAR = self.eye_ar(rightEye)
             ear = (leftEAR + rightEAR) / 2.0
             return ear
+
+
+
+    def get_head_pose(self, shape, object_pts, cam_matrix, dist_coeffs, reprojectsrc):
+        image_pts = np.float32([shape[17], shape[21], shape[22], shape[26], shape[36],
+                                shape[39], shape[42], shape[45], shape[31], shape[35],
+                                shape[48], shape[54], shape[57], shape[8]])
+
+        _, rotation_vec, translation_vec = cv2.solvePnP(
+            object_pts, image_pts, cam_matrix, dist_coeffs)
+
+        reprojectdst, _ = cv2.projectPoints(reprojectsrc, rotation_vec, translation_vec, cam_matrix,
+                                            dist_coeffs)
+
+        reprojectdst = tuple(map(tuple, reprojectdst.reshape(8, 2)))
+
+        # calc euler angle
+        rotation_mat, _ = cv2.Rodrigues(rotation_vec)
+        pose_mat = cv2.hconcat((rotation_mat, translation_vec))
+        _, _, _, _, _, _, euler_angle = cv2.decomposeProjectionMatrix(pose_mat)
+
+        return reprojectdst, euler_angle
+
+    def head_pose(self, frame):
+
+        face_rects = self.detect(frame, 0)
+        if(len(face_rects) > 0):
+            shape = self.predict(frame, face_rects[0])
+            shape = face_utils.shape_to_np(shape)
+
+            _, euler_angle = self.get_head_pose(
+                shape, self.object_pts, self.cam_matrix, self.dist_coeffs, self.reprojectsrc)
+            if(-10 <= euler_angle[2, 0] and euler_angle[2, 0] <= 10):
+                return 0
+            else:
+                return 1
+        else:
+            return 1
+
+    def run_frame(self, frame):
+        return (self.drowsy(frame), self.yawn(frame), self.head_pose(frame), self.tot)
