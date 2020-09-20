@@ -13,17 +13,25 @@ while True:
 
     frame = gaze.annotated_frame()
     text = ""
+    flag = 0
 
     if gaze.is_blinking():
         text = "Blinking"
     elif gaze.is_right():
         text = "Looking right"
+        flag = 1
     elif gaze.is_left():
         text = "Looking left"
+        flag = 1
     elif gaze.is_center():
         text = "Looking center"
+        flag = 0
 
-    cv2.putText(frame, text, (90, 60), cv2.FONT_HERSHEY_DUPLEX, 1.6, (147, 58, 31), 2)
+    #cv2.putText(frame, text, (90, 60), cv2.FONT_HERSHEY_DUPLEX, 1.6, (147, 58, 31), 2)
+    if flag == 0:
+        cv2.putText(frame, "Focused", (90, 60), cv2.FONT_HERSHEY_DUPLEX, 1.6, (0, 255, 0), 2)
+    else:
+        cv2.putText(frame, "Distracted", (90, 60), cv2.FONT_HERSHEY_DUPLEX, 1.6, (0, 0, 255), 2)
 
     left_pupil = gaze.pupil_left_coords()
     right_pupil = gaze.pupil_right_coords()
