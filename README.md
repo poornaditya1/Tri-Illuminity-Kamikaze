@@ -7,4 +7,5 @@ During this Covid-19 era as we all know most of the schools,colleges and univers
 
 
 ## Story of the name:
-We named this project as Kamikaze, because we too are students and also guilty of being "distracted" during classes 😅. On one hand, it solves a probelm, but also it is something that will stop us from being distracted
+Kamikazes were the suicide bombing planes used by Japan during the World War.
+So, we named this project as Kamikaze, because we too are students and also guilty of being "distracted" during classes 😅. On one hand, it solves a probelm, but also it is something that will stop us from being distracted
